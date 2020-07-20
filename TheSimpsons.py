@@ -16,19 +16,20 @@ plt.rcParams["font.family"] = "serif"
 MinimumWords = 1000
 KEYWORDS1 = ['BEER', 'BEERS', 'WINE', 'DUFF', 'DRUNK', 'ALCOHOLIC', 'ALCOHOLICS', 'ALCOHOL', 'DRINKING', 'BAR', 'CIGAR', 'CIGARETTE', 'DRUGS', 'REEFER', 'MARIJUANA', 'BONG', 'BONGS', 'COCAINE']
 KEYWORDS2 = ['ROMANTIC', 'ROMANCE', 'SEX', 'SEXUAL', 'SEXY', 'HOTTIE', 'LUST', 'LOVER', 'LIBIDO', 'LOVERS', 'LUSTS', 'BOOB', 'BOOBS', 'BREAST', 'BREASTS', 'BUTT', 'BUTTS', 'WONANIZE', 'WONAMIZER', 'KINKY', 'KINK', 'UNDERWEAR', 'BRA', 'BRAS', 'PANTIES']
-PATH_TO_DATA = './553928_1008865_bundle_archive/simpsons_script_lines.csv'
+PATH_TO_DATA = './TheSimpsons/553928_1008865_bundle_archive/simpsons_script_lines.csv'
 IMAGE_PATH = './TheSimpsons/Headshots/'
 
+# Count frequency of set of keywords, and divide by the total number of words spoken by that character
 def get_freqs(DICT, KEYWORDS):
     DICT1 = {}
-    for character in DICT.keys():
+    for character in DICT.keys(): # Loop through each character
         X = 0
-        for kw in KEYWORDS:
+        for kw in KEYWORDS: # Loop through each key word
             if kw in DICT[character].keys():
-                X += DICT[character][kw]
-        TotalWords = sum(DICT[character].values())
+                X += DICT[character][kw] # Sum
+        TotalWords = sum(DICT[character].values()) # Divide by total number of words
         X /= TotalWords
-        if TotalWords > MinimumWords:
+        if TotalWords > MinimumWords: # Character must speak mimimum amount of words to be included
             #print(character, X)
             DICT1[character] = X
     sorted_DICT1 = sorted(DICT1.items(), key=lambda x: x[1])
@@ -64,14 +65,14 @@ def plot_scatter(DICT1, DICT2, sorted_DICT2):
         if character in DICT2.keys():
             if character == "Crowd" or character == "Announcer": # Skip because they are not Individual characters
                 continue
-            X = np.log10(DICT1[character])
-            Y = np.log10(DICT2[character])
+            X = np.log10(DICT1[character]) # Feel free to remove log scale
+            Y = np.log10(DICT2[character]) # Feel free to remove log scale
 
             logopath = IMAGE_PATH + character + ".png"
-            if os.path.exists(logopath):
+            if os.path.exists(logopath): # If image exists for this character
                 image_path = get_sample_data(logopath)
                 imscatter(X, Y, image_path, zoom=0.5, ax=ax)
-            else:
+            else: # Otherwise, just plot a dot with a name
                 plt.scatter(X, Y)
                 plt.annotate(character, # this is the text
                              (X, Y), # this is the point to label
@@ -122,8 +123,8 @@ def main():
             else:
                 DICT[character][w] = 1
 
-    sorted_DICT1, DICT1 = get_freqs(DICT, KEYWORDS1)
-    sorted_DICT2, DICT2 = get_freqs(DICT, KEYWORDS2)
-    plot_scatter(DICT1, DICT2, sorted_DICT2)
+    sorted_DICT1, DICT1 = get_freqs(DICT, KEYWORDS1) # Get frequencies for keyword set 1
+    sorted_DICT2, DICT2 = get_freqs(DICT, KEYWORDS2) # Get frequencies for keyword set 2
+    plot_scatter(DICT1, DICT2, sorted_DICT2) # Plot
 
 main()
